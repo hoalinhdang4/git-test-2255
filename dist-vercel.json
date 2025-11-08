@@ -1,0 +1,21 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/robot",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/required",
+      "destination": "/required.html"
+    },
+    {
+      "source": "/:slug-:code.html",
+      "destination": "/required.html"
+    }
+  ]
+}
+
